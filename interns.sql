@@ -40,3 +40,27 @@ CREATE TABLE learner_profiles (
   CONSTRAINT fk_profile_learner FOREIGN KEY (learner_id) REFERENCES learners(id)
     ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+-- departments
+CREATE TABLE departments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  code VARCHAR(20) NOT NULL UNIQUE,
+  name VARCHAR(120) NOT NULL,
+  location VARCHAR(120),
+  description TEXT
+);
+
+-- mentors
+CREATE TABLE mentors (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  department_id INT NOT NULL,
+  first_name VARCHAR(80) NOT NULL,
+  last_name VARCHAR(80) NOT NULL,
+  email VARCHAR(150),
+  phone VARCHAR(30),
+  role VARCHAR(100),
+  is_primary BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_mentors_department FOREIGN KEY (department_id) REFERENCES departments(id)
+    ON UPDATE CASCADE ON DELETE RESTRICT
+);
