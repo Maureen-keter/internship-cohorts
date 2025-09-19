@@ -28,3 +28,15 @@ CREATE TABLE learners (
   CONSTRAINT fk_learners_cohort FOREIGN KEY (cohort_id) REFERENCES cohorts(id)
     ON UPDATE CASCADE ON DELETE RESTRICT
 );
+
+-- learner_profiles (one-to-one)
+CREATE TABLE learner_profiles (
+  learner_id INT PRIMARY KEY,
+  address VARCHAR(255),
+  emergency_contact_name VARCHAR(120),
+  emergency_contact_phone VARCHAR(30),
+  education_summary TEXT,
+  linkedin_url VARCHAR(255),
+  CONSTRAINT fk_profile_learner FOREIGN KEY (learner_id) REFERENCES learners(id)
+    ON DELETE CASCADE ON UPDATE CASCADE
+);
