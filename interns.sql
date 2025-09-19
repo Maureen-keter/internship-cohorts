@@ -183,3 +183,29 @@ CREATE TABLE feedback (
   CONSTRAINT fk_feedback_rotation FOREIGN KEY (rotation_assignment_id) REFERENCES rotation_assignments(id)
     ON UPDATE CASCADE ON DELETE SET NULL
 );
+
+-- VIEW: current_schedule_view
+CREATE OR REPLACE VIEW current_schedule_view AS
+SELECT
+  ra.id AS assignment_id,
+  l.id AS learner_id,
+  CONCAT(l.first_name, ' ', l.last_name) AS learner_name,
+  c.name AS cohort,
+  rp.name AS rotation_period,
+  drs.id AS department_slot_id,
+  d.name AS department_name,
+  rp.start_date,
+  rp.end_date,
+  ra.status,
+  ra.assigned_at
+FROM rotation_assignments ra
+JOIN learners l ON ra.learner_id = l.id
+JOIN department_rotation_slots drs ON ra.department_slot_id = drs.id
+JOIN departments d ON drs.department_id = d.id
+JOIN rotation_periods rp ON drs.rotation_period_id = rp.id
+JOIN cohorts c ON rp.cohort_id = c.id;
+
+-- INDEXES
+CREATE INDEX idx_rotationperiod_dates ON rotation_periods (start_date, end_date);
+CREATE INDEX idx_department_slot_rotation ON department_rotation_slots (rotation_period_id);
+CREATE INDEX idx_attendance_dates ON attendance (attendance_date, learner_id);
