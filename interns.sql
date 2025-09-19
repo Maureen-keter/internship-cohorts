@@ -115,3 +115,38 @@ CREATE TABLE staff_users (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- rotation_assignments
+CREATE TABLE rotation_assignments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  learner_id INT NOT NULL,
+  department_slot_id INT NOT NULL,
+  assigned_by_staff_id INT DEFAULT NULL,
+  assigned_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status ENUM('scheduled','in_progress','completed','cancelled') NOT NULL DEFAULT 'scheduled',
+  UNIQUE KEY ux_assignment_learner_slot (learner_id, department_slot_id),
+  CONSTRAINT fk_assign_learner FOREIGN KEY (learner_id) REFERENCES learners(id)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_assign_slot FOREIGN KEY (department_slot_id) REFERENCES department_rotation_slots(id)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_assign_assignedby_staff FOREIGN KEY (assigned_by_staff_id) REFERENCES staff_users(id)
+    ON UPDATE CASCADE ON DELETE SET NULL
+);
+
+-- attendance
+CREATE TABLE attendance (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  learner_id INT NOT NULL,
+  attendance_date DATE NOT NULL,
+  context ENUM('induction','rotation') NOT NULL,
+  induction_session_id INT DEFAULT NULL,
+  rotation_assignment_id INT DEFAULT NULL,
+  present BOOLEAN NOT NULL DEFAULT FALSE,
+  remarks TEXT,
+  recorded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_attendance_learner FOREIGN KEY (learner_id) REFERENCES learners(id)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_attendance_induction FOREIGN KEY (induction_session_id) REFERENCES induction_sessions(id)
+    ON UPDATE CASCADE ON DELETE SET NULL,
+  CONSTRAINT fk_attendance_rotation FOREIGN KEY (rotation_assignment_id) REFERENCES rotation_assignments(id)
+    ON UPDATE CASCADE ON DELETE SET NULL
+);
