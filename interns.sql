@@ -104,3 +104,14 @@ CREATE TABLE department_rotation_slots (
   UNIQUE KEY ux_slot_rotation_department (rotation_period_id, department_id)
 );
 
+-- staff_users
+CREATE TABLE staff_users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(80) NOT NULL UNIQUE,
+  first_name VARCHAR(80),
+  last_name VARCHAR(80),
+  email VARCHAR(150) UNIQUE,
+  role VARCHAR(80),
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
