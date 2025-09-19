@@ -64,3 +64,43 @@ CREATE TABLE mentors (
   CONSTRAINT fk_mentors_department FOREIGN KEY (department_id) REFERENCES departments(id)
     ON UPDATE CASCADE ON DELETE RESTRICT
 );
+
+-- induction_sessions
+CREATE TABLE induction_sessions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  cohort_id INT NOT NULL,
+  session_date DATE NOT NULL,
+  title VARCHAR(150) NOT NULL,
+  agenda TEXT,
+  duration_hours DECIMAL(4,2) DEFAULT 3.00,
+  CONSTRAINT fk_induction_cohort FOREIGN KEY (cohort_id) REFERENCES cohorts(id)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  UNIQUE KEY ux_induction_cohort_date (cohort_id, session_date)
+);
+
+-- rotation_periods
+CREATE TABLE rotation_periods (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  cohort_id INT NOT NULL,
+  name VARCHAR(150) NOT NULL,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  notes TEXT,
+  CONSTRAINT fk_rotation_cohort FOREIGN KEY (cohort_id) REFERENCES cohorts(id)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-- department_rotation_slots
+CREATE TABLE department_rotation_slots (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  rotation_period_id INT NOT NULL,
+  department_id INT NOT NULL,
+  capacity INT DEFAULT 5,
+  notes TEXT,
+  CONSTRAINT fk_slot_rotation FOREIGN KEY (rotation_period_id) REFERENCES rotation_periods(id)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_slot_department FOREIGN KEY (department_id) REFERENCES departments(id)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  UNIQUE KEY ux_slot_rotation_department (rotation_period_id, department_id)
+);
+
