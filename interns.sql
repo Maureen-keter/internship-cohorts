@@ -150,3 +150,36 @@ CREATE TABLE attendance (
   CONSTRAINT fk_attendance_rotation FOREIGN KEY (rotation_assignment_id) REFERENCES rotation_assignments(id)
     ON UPDATE CASCADE ON DELETE SET NULL
 );
+
+-- evaluations
+CREATE TABLE evaluations (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  rotation_assignment_id INT NOT NULL,
+  evaluator_mentor_id INT NOT NULL,
+  score DECIMAL(5,2) NOT NULL,
+  competency_notes TEXT,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_eval_assignment FOREIGN KEY (rotation_assignment_id) REFERENCES rotation_assignments(id)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_eval_mentor FOREIGN KEY (evaluator_mentor_id) REFERENCES mentors(id)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  CHECK (score >= 0 AND score <= 100)
+);
+
+-- feedback
+CREATE TABLE feedback (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  learner_id INT NOT NULL,
+  context ENUM('induction','rotation','general') NOT NULL DEFAULT 'general',
+  induction_session_id INT DEFAULT NULL,
+  rotation_assignment_id INT DEFAULT NULL,
+  submitted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  content TEXT NOT NULL,
+  anonymous BOOLEAN NOT NULL DEFAULT FALSE,
+  CONSTRAINT fk_feedback_learner FOREIGN KEY (learner_id) REFERENCES learners(id)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_feedback_induction FOREIGN KEY (induction_session_id) REFERENCES induction_sessions(id)
+    ON UPDATE CASCADE ON DELETE SET NULL,
+  CONSTRAINT fk_feedback_rotation FOREIGN KEY (rotation_assignment_id) REFERENCES rotation_assignments(id)
+    ON UPDATE CASCADE ON DELETE SET NULL
+);
